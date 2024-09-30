@@ -31,6 +31,7 @@ class _MainscreenState extends State<Mainscreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
+      drawer: _buildSideMenu(),
       body: SizedBox.expand(
         child: Container(
           padding: const EdgeInsets.all(10),
@@ -55,9 +56,12 @@ class _MainscreenState extends State<Mainscreen> {
       backgroundColor: AppTheme.appBarColor,
       centerTitle: true,
       title: Text(
-        'Jarvis Assistent',
+        'Jarvis Assistant',
         style:
             TextStyle(color: AppTheme.textColor, fontWeight: FontWeight.bold),
+      ),
+      iconTheme: IconThemeData(
+        color: AppTheme.secondaryColor
       ),
     );
   }
@@ -133,6 +137,66 @@ class _MainscreenState extends State<Mainscreen> {
                 )
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Build the side menu (Drawer)
+  Widget _buildSideMenu() {
+    return Drawer(
+      backgroundColor: AppTheme.primaryColor,
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            decoration: BoxDecoration(
+              color: AppTheme.secondaryColor,
+            ),
+            child: Text(
+              'Menu',
+              style: TextStyle(
+                color: AppTheme.textColor,
+                fontSize: 24,
+              ),
+            ),
+          ),
+          ListTile(
+            leading: Icon(Icons.home, color: AppTheme.secondaryColor),
+            title: Text('Home'),
+            textColor: AppTheme.textColor,
+            onTap: () {
+              Navigator.pop(context); // Close the drawer
+              // Navigate to Home Screen or perform an action
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.settings, color: AppTheme.secondaryColor),
+            title: Text('Settings'),
+            textColor: AppTheme.textColor,
+            onTap: () {
+              Navigator.pop(context); // Close the drawer
+              // Navigate to Settings Screen or perform an action
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.info, color: AppTheme.secondaryColor),
+            title: Text('About'),
+            textColor: AppTheme.textColor,
+            onTap: () {
+              Navigator.pop(context); // Close the drawer
+              // Navigate to Settings Screen or perform an action
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.logout, color: AppTheme.secondaryColor),
+            title: Text('Logout'),
+            textColor: AppTheme.textColor,
+            onTap: () {
+              Navigator.pop(context); // Close the drawer
+              // Implement logout functionality here
+            },
           ),
         ],
       ),
