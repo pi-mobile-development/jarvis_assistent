@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jarvis_assistent/Models/message_model.dart';
 import 'package:jarvis_assistent/Themes/themes.dart';
+import 'package:jarvis_assistent/about_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class Mainscreen extends StatefulWidget {
@@ -182,11 +183,14 @@ class _MainscreenState extends State<Mainscreen> {
           ),
           ListTile(
             leading: Icon(Icons.info, color: AppTheme.secondaryColor),
-            title: Text('About'),
+            title: Text('About App'),
             textColor: AppTheme.textColor,
             onTap: () {
-              Navigator.pop(context); // Close the drawer
-              // Navigate to Settings Screen or perform an action
+              Navigator.pop(context); 
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AboutPage()),
+                );
             },
           ),
           ListTile(
