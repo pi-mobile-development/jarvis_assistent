@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:jarvis_assistent/Models/message_model.dart';
 import 'package:jarvis_assistent/Themes/themes.dart';
 import 'package:jarvis_assistent/about_screen.dart';
+import 'package:jarvis_assistent/login.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class Mainscreen extends StatefulWidget {
@@ -165,7 +166,7 @@ class _MainscreenState extends State<Mainscreen> {
           ),
           ListTile(
             leading: Icon(Icons.info, color: AppTheme.secondaryColor),
-            title: Text('About App'),
+            title: const Text('About App'),
             textColor: AppTheme.textColor,
             onTap: () {
               Navigator.pop(context); 
@@ -177,11 +178,14 @@ class _MainscreenState extends State<Mainscreen> {
           ),
           ListTile(
             leading: Icon(Icons.logout, color: AppTheme.secondaryColor),
-            title: Text('Logout'),
+            title: const Text('Logout'),
             textColor: AppTheme.textColor,
             onTap: () {
               Navigator.pop(context); // Close the drawer
-              // Implement logout functionality here
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginPage()),
+                );
             },
           ),
         ],
