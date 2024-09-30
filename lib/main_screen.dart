@@ -1,7 +1,7 @@
-
 import 'package:flutter/material.dart';
 import 'package:jarvis_assistent/Models/message_model.dart';
 import 'package:jarvis_assistent/Themes/themes.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class Mainscreen extends StatefulWidget {
   const Mainscreen({super.key});
@@ -14,12 +14,13 @@ class _MainscreenState extends State<Mainscreen> {
   final _textInputController = TextEditingController();
   final _scrollController = ScrollController();
   final _messages = <MessageModel>[];
+  bool _isRecording = false;
 
   void scrollDown() {
     Future.delayed(
       const Duration(milliseconds: 200), () {
       _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent, 
+        _scrollController.position.maxScrollExtent,
         duration: const Duration(milliseconds: 200), 
         curve: Curves.easeInOut
       );
@@ -29,17 +30,7 @@ class _MainscreenState extends State<Mainscreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppTheme.appBarColor,
-        title: Text(
-          'Jarvis Assistent',
-          style: TextStyle(
-            color: AppTheme.textColor, 
-            fontWeight: FontWeight.bold
-          ),
-        ),
-        centerTitle: true,
-      ),
+      appBar: _buildAppBar(),
       body: SizedBox.expand(
         child: Container(
           padding: const EdgeInsets.all(10),
@@ -47,79 +38,135 @@ class _MainscreenState extends State<Mainscreen> {
           child: Column(
             children: [
               Expanded(
-                child: ListView.builder(
-                  controller: _scrollController,
-                  itemCount: _messages.length,
-                  itemBuilder: (_, int index) {
-                    return Row(
-                      children: [
-                        if (_messages[index].messageFrom == MessageFrom.USER)
-                          const Spacer(),
-                        Container(
-                          margin: const EdgeInsets.all(12),
-                          width: MediaQuery.of(context).size.width * 0.7,
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: AppTheme.secondaryColor,
-                            borderRadius: BorderRadius.circular(12)
-                          ),
-                          child: Text(
-                            _messages[index].message,
-                            style: TextStyle(
-                              color: AppTheme.textColor,
-                              fontSize: 20
-                            ),
-                          )
-                        ),
-                      ],
-                    );
-                  }
-                )
+                child: _buildMessageView()
               ),
-              TextField(
-                style: TextStyle(
-                  fontSize: 18,
-                  color: AppTheme.textColor,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2
-                ),
-                maxLines: 4,
-                minLines: 1,
-                controller: _textInputController,
-                decoration: InputDecoration(
-                  hintText: 'Digite sua pergunta',
-                  hintStyle: TextStyle(color: AppTheme.textColor),
-                  enabledBorder: AppTheme.outlineInputBorder,
-                  fillColor: AppTheme.appBarColor,
-                  focusedBorder: AppTheme.outlineInputBorder,
-                  filled: true,
-                  suffixIcon: IconButton(
-                    onPressed: () async {
-                      if (_textInputController.text.isNotEmpty) {
-                        final prompt = _textInputController.text;
-                        setState(() {
-                          _messages.add(MessageModel(message: prompt, messageFrom: MessageFrom.USER));
-                          _textInputController.text = "";
-                          scrollDown();
-                        });
-
-                        setState(() {
-                          _messages.add(MessageModel(message: 'Resposta padrao', messageFrom: MessageFrom.IA));
-                          scrollDown();
-                        });
-                      }
-                    },
-                    icon: Icon(
-                      Icons.send,
-                      color: AppTheme.textColor,
-                    )
-                  )
-                ),
-              ),
+              Divider(height: 1, color: AppTheme.secondaryColor),
+              _buildInputBar(),
             ],
           )
         ),
       ),
     );
+  }
+
+  // Builders
+  PreferredSizeWidget _buildAppBar() {
+    return AppBar(
+      backgroundColor: AppTheme.appBarColor,
+      centerTitle: true,
+      title: Text(
+        'Jarvis Assistent',
+        style:
+            TextStyle(color: AppTheme.textColor, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  ListView _buildMessageView() {
+    return ListView.builder(
+      controller: _scrollController,
+      itemCount: _messages.length,
+      itemBuilder: (_, int index) {
+        return Row(
+          children: [
+            if (_messages[index].messageFrom == MessageFrom.USER)
+              const Spacer(),
+            Container(
+              margin: const EdgeInsets.all(12),
+              width: MediaQuery.of(context).size.width * 0.7,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                  color: _messages[index].messageFrom == MessageFrom.USER
+                      ? const Color(0xAA1a1f24).withOpacity(0.5)
+                      : AppTheme.secondaryColor.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12)),
+              child: Text(
+                _messages[index].message,
+                style: TextStyle(color: AppTheme.textColor, fontSize: 20),
+              )
+            ),
+          ],
+        );
+      }
+    );
+  }
+
+  Widget _buildInputBar() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        children: [
+          IconButton(
+            icon: const Icon(Icons.camera_alt),
+            onPressed: _pickImage,
+            color: AppTheme.secondaryColor,
+          ),
+          IconButton(
+            icon: Icon(_isRecording ? Icons.stop : Icons.mic),
+            onPressed: _recordAudio,
+            color: AppTheme.secondaryColor
+          ),
+          Expanded(
+            child: TextField(
+              style: TextStyle(
+                fontSize: 18,
+                color: AppTheme.textColor,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.2
+              ),
+              maxLines: 4,
+              minLines: 1,
+              controller: _textInputController,
+              decoration: InputDecoration(
+                hintText: 'Digite sua pergunta',
+                hintStyle: TextStyle(color: AppTheme.textColor),
+                enabledBorder: AppTheme.outlineInputBorder,
+                fillColor: AppTheme.appBarColor,
+                focusedBorder: AppTheme.outlineInputBorder,
+                filled: true,
+                suffixIcon: IconButton(
+                  onPressed: _sendMessage,
+                  icon: Icon(
+                    Icons.send,
+                    color: AppTheme.secondaryColor,
+                  )
+                )
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Actions
+  void _sendMessage() async {
+    if (_textInputController.text.isNotEmpty) {
+      final prompt = _textInputController.text;
+      setState(() {
+        _messages
+            .add(MessageModel(message: prompt, messageFrom: MessageFrom.USER));
+        _textInputController.clear();
+        scrollDown();
+      });
+
+      setState(() {
+        _messages.add(MessageModel(
+            message: 'Resposta padrao', messageFrom: MessageFrom.IA));
+        scrollDown();
+      });
+    }
+  }
+
+  void _recordAudio() {
+    setState(() {
+      _isRecording = !_isRecording;
+    });
+  }
+
+  Future<void> _pickImage() async {
+    if (await Permission.camera.request().isGranted) {
+      //camera
+    }
   }
 }
