@@ -164,24 +164,6 @@ class _MainscreenState extends State<Mainscreen> {
             ),
           ),
           ListTile(
-            leading: Icon(Icons.home, color: AppTheme.secondaryColor),
-            title: Text('Home'),
-            textColor: AppTheme.textColor,
-            onTap: () {
-              Navigator.pop(context); // Close the drawer
-              // Navigate to Home Screen or perform an action
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.settings, color: AppTheme.secondaryColor),
-            title: Text('Settings'),
-            textColor: AppTheme.textColor,
-            onTap: () {
-              Navigator.pop(context); // Close the drawer
-              // Navigate to Settings Screen or perform an action
-            },
-          ),
-          ListTile(
             leading: Icon(Icons.info, color: AppTheme.secondaryColor),
             title: Text('About App'),
             textColor: AppTheme.textColor,
