@@ -5,10 +5,11 @@ class AppTheme {
 
   static Color get appBarColor => const Color(0xFF1A1A1A);
   static Color get primaryColor => const Color(0xFF333333);
-  static Color get secondaryColor => const Color(0xFF5B2C6F);
+  static Color get secondaryColor => const Color.fromARGB(159, 194, 104, 233);
   static Color get textColor => Colors.white;
 
   static OutlineInputBorder get outlineInputBorder => OutlineInputBorder(
-      borderSide: BorderSide(color: AppTheme.secondaryColor),
-      borderRadius: BorderRadius.circular(12));
+    borderSide: BorderSide(color: AppTheme.secondaryColor),
+    borderRadius: BorderRadius.circular(12)
+  );
 }
