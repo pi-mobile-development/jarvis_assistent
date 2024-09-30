@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jarvis_assistent/main_screen.dart';
+import 'package:jarvis_assistent/login.dart';
 
 void main() {
   runApp(const MainApp());
@@ -10,6 +10,6 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(home: Mainscreen());
+    return const MaterialApp(home: LoginPage());
   }
 }
